@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            id="openFolder.contribution"
+            objectClass="org.eclipse.core.resources.IResource">
+         <action
+               class="openfolder.popup.actions.OpenFolderAction"
+               enablesFor="1"
+               icon="icons/srcFolder.gif"
+               id="openFolder.openFolder"
+               label="打开win目录"
+               menubarPath="additions">
+         </action>
+      </objectContribution>
+   </extension>
+
+</plugin>
