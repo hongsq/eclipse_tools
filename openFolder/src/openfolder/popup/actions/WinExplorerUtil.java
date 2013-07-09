@@ -30,7 +30,7 @@ public final class WinExplorerUtil {
 		if(file.isFile()){
 			command.append("/select,");
 		}else{
-			command.append("/root,");
+			command.append("/e,");
 		}
 		
 		command.append("\"");
