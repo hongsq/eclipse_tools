@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.internal.runtime.AdapterManager;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -52,38 +52,23 @@ public class CopyResourceAction implements IObjectActionDelegate {
 			Object[] objects = currentSelection.toArray();
 			List<String> files = new ArrayList<String>();
 			for (Object object : objects) {
-				if (object instanceof IResource) {
-					IResource resource = (IResource) object;
-					files.add(new File(resource.getLocationURI()).getCanonicalPath());
-				}else if (object instanceof JarPackageFragmentRoot) {
-					JarPackageFragmentRoot jar = (JarPackageFragmentRoot) object;
-					String path = jar.getPath().toOSString();
-					files.add(new File(path).getCanonicalPath());
-				}else if (object instanceof IAdaptable) {
-					IAdaptable adaptable = (IAdaptable) object;
-					IResource resource = (IResource) adaptable.getAdapter(IResource.class);
-					if(null != resource){
-						files.add(new File(resource.getLocationURI()).getCanonicalPath());
-					}else{
-						JarPackageFragmentRoot jar = (JarPackageFragmentRoot) adaptable.getAdapter(JarPackageFragmentRoot.class);
-						if(null != jar){
-							String path = jar.getPath().toOSString();
-							files.add(new File(path).getCanonicalPath());
-						}
+				String path = WinExplorerUtil.getPath(object);
+				if(null != path)
+					files.add(path);
+			}
+			
+			if(files.size()>0){
+				Clipboard clipboard = null;
+				try {
+					clipboard = new Clipboard(shell.getDisplay());
+					clipboard.setContents(new Object[]{files.toArray(new String[files.size()])}, new Transfer[]{FileTransfer.getInstance()});
+				} finally {
+					if (clipboard != null) {
+						clipboard.dispose();
 					}
 				}
 			}
-			
-			Clipboard clipboard = null;
-			try {
-				clipboard = new Clipboard(shell.getDisplay());
-				clipboard.setContents(new Object[]{files.toArray(new String[files.size()])}, new Transfer[]{FileTransfer.getInstance()});
-			} finally {
-				if (clipboard != null) {
-					clipboard.dispose();
-				}
-			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

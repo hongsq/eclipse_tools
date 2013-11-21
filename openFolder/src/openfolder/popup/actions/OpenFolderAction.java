@@ -2,12 +2,11 @@ package openfolder.popup.actions;
 
 import java.io.IOException;
 
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.jdt.internal.core.JarPackageFragmentRoot;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IActionDelegate;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
@@ -18,7 +17,7 @@ import org.eclipse.ui.IWorkbenchPart;
  */
 public class OpenFolderAction implements IObjectActionDelegate {
 	protected IStructuredSelection currentSelection;
-//	private Shell shell;
+	private Shell shell;
 	
 	/**
 	 * Constructor for Action1.
@@ -31,7 +30,7 @@ public class OpenFolderAction implements IObjectActionDelegate {
 	 * @see IObjectActionDelegate#setActivePart(IAction, IWorkbenchPart)
 	 */
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
-//		shell = targetPart.getSite().getShell();
+		shell = targetPart.getSite().getShell();
 	}
 
 	/**
@@ -43,27 +42,12 @@ public class OpenFolderAction implements IObjectActionDelegate {
 		
 		try {
 			Object object = currentSelection.getFirstElement();
-			if (object instanceof IResource) {
-				IResource resource = (IResource) object;
-				WinExplorerUtil.openFolder(resource);
-			}else if (object instanceof JarPackageFragmentRoot) {
-				JarPackageFragmentRoot jar = (JarPackageFragmentRoot) object;
-				String path = jar.getPath().toOSString();
-				
+			String path = WinExplorerUtil.getPath(object);
+			
+			if(null == path){
+				MessageDialog.openInformation(shell, "提示", "不支持此类型");
+			}else{
 				WinExplorerUtil.openFolder(path);
-			}else if (object instanceof IAdaptable) {
-				IAdaptable adaptable = (IAdaptable) object;
-				IResource resource = (IResource) adaptable.getAdapter(IResource.class);
-				if(null != resource){
-					WinExplorerUtil.openFolder(resource);
-				}else{
-					JarPackageFragmentRoot jar = (JarPackageFragmentRoot) adaptable.getAdapter(JarPackageFragmentRoot.class);
-					if(null != jar){
-						String path = jar.getPath().toOSString();
-						
-						WinExplorerUtil.openFolder(path);
-					}
-				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

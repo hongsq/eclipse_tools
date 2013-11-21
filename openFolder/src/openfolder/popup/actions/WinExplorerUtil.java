@@ -6,7 +6,9 @@ package openfolder.popup.actions;
 import java.io.File;
 import java.io.IOException;
 
+import org.eclipse.core.internal.runtime.AdapterManager;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IAdaptable;
 
 /**
  * @author hongshuiqiao
@@ -14,6 +16,38 @@ import org.eclipse.core.resources.IResource;
  */
 public final class WinExplorerUtil {
 	private WinExplorerUtil() {}
+	
+	public static String getPath(Object object) throws IOException {
+		if (object instanceof IResource) {
+			IResource resource = (IResource) object;
+			return new File(resource.getLocationURI()).getCanonicalPath();
+		}else if (object instanceof File) {
+			File file = (File) object;
+			return file.getCanonicalPath();
+		}else if (object instanceof IAdaptable) {
+			IAdaptable adaptable = (IAdaptable) object;
+			IResource resource = (IResource) adaptable.getAdapter(IResource.class);
+			if(null != resource){
+				return new File(resource.getLocationURI()).getCanonicalPath();
+			}
+			
+			File file = (File) adaptable.getAdapter(File.class);
+			if(null != file){
+				return file.getCanonicalPath();
+			}
+		}else{
+			IResource resource = (IResource) AdapterManager.getDefault().getAdapter(object, IResource.class);
+			if(null != resource){
+				return new File(resource.getLocationURI()).getCanonicalPath();
+			}
+			
+			File file = (File) AdapterManager.getDefault().getAdapter(object, File.class);
+			if(null != file){
+				return file.getCanonicalPath();
+			}
+		}
+		return null;
+	}
 	
 	public static void openFolder(IResource resource) throws IOException{
 		openFolder(new File(resource.getLocationURI()).getCanonicalPath());

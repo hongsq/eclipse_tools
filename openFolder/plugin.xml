@@ -7,7 +7,7 @@
       <objectContribution
             adaptable="true"
             id="openFolder.contribution"
-            objectClass="org.eclipse.core.runtime.PlatformObject">
+            objectClass="java.lang.Object">
          <action
                class="openfolder.popup.actions.OpenFolderAction"
                enablesFor="1"
@@ -15,40 +15,30 @@
                id="openFolder.openFolder"
                label="打开win目录"
                menubarPath="additions">
-            <enablement>
-               <or>
-                  <objectClass
-                        name="org.eclipse.core.resources.IResource">
-                  </objectClass>
-                  <objectClass
-                        name="org.eclipse.jdt.internal.core.JarPackageFragmentRoot">
-                  </objectClass>
-               </or>
-            </enablement>
          </action>
       </objectContribution>
       <objectContribution
             adaptable="true"
             id="copyresource.contribution"
-            objectClass="org.eclipse.core.runtime.PlatformObject">
+            objectClass="java.lang.Object">
          <action
                class="openfolder.popup.actions.CopyResourceAction"
                enablesFor="+"
                id="openFolder.openFolder"
                label="复制到剪贴板"
                menubarPath="additions">
-            <enablement>
-               <or>
-                  <objectClass
-                        name="org.eclipse.core.resources.IResource">
-                  </objectClass>
-                  <objectClass
-                        name="org.eclipse.jdt.internal.core.JarPackageFragmentRoot">
-                  </objectClass>
-               </or>
-            </enablement>
          </action>
       </objectContribution>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.jdt.internal.core.JarPackageFragmentRoot"
+            class="com.hongsq.factory.FileAdapterFactory">
+         <adapter
+               type="java.io.File">
+         </adapter>
+      </factory>
    </extension>
 
 </plugin>
